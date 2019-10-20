@@ -134,6 +134,9 @@ const buyComputation = iexec => async () => {
     buyBuyOutput.innerText = "";
     const appAddress = buyAppAddressInput.value;
     const category = buyCategoryInput.value;
+    if (!buyParamsInput1.value.startsWith('https')) {
+      throw new Error('Please provide a github http URL eg. https://github.com/maggo/decentralify.git')
+    }
     const buyParamsInput =
       buyParamsInput1.value +
       " " +
@@ -288,8 +291,6 @@ const showPreviousDeals = iexec => async () => {
     previousDealsOutput.innerText = "";
     const userAddress = await iexec.wallet.getAddress();
     const deals = await iexec.deal.fetchRequesterDeals(userAddress);
-
-    console.log(deals);
 
     previousDealsOutput.innerHTML = deals.count + " build(s)<br />";
 
