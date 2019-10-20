@@ -300,6 +300,39 @@ const deploy = iexec => async taskId => {
   }
 };
 
+const showOutput = iexec => async taskId => {
+  try {
+    if (!taskId) {
+      throw new Error('No task id')
+    }
+
+    const res = await iexec.task.fetchResults(taskId, {
+      ipfsGatewayURL: "https://ipfs.iex.ec"
+    });
+    const file = await res.blob();
+
+    function blob2data(blob) {
+      const fd = new FormData();
+      fd.set("a", blob);
+      return fd.get("a");
+    }
+    const rawData = blob2data(file);
+
+    const JSZip = require("jszip");
+    const zip = new JSZip();
+    const data = await zip.loadAsync(rawData);
+
+    const stdFile = data.file("stdout.txt");
+    const stdText = await stdFile.async("string");
+
+    document.getElementById('build-output').innerText = stdText;
+    window.scrollTo(document.getElementById('build-output'));
+  } catch (e) {
+    document.getElementById('build-output').innerText = e;
+  }
+};
+
+
 const showPreviousDeals = iexec => async () => {
   try {
     previousDealsButton.disabled = true;
@@ -323,6 +356,12 @@ const showPreviousDeals = iexec => async () => {
             deploy(iexec)(task);
           });
 
+          const showButton = document.createElement("button");
+          showButton.innerText = "Show output";
+          showButton.addEventListener("click", function() {
+            showOutput(iexec)(task);
+          });
+
           const container = document.createElement("div");
           container.innerHTML = `
         ID: ${task}<br />
@@ -332,6 +371,8 @@ const showPreviousDeals = iexec => async () => {
 
           if (taskDetails.statusName === "COMPLETED") {
             container.appendChild(button);
+
+            container.appendChild(showButton);
           }
 
           container.style = `border-color: ${
