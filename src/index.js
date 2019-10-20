@@ -1,7 +1,7 @@
 import "./styles.css";
 import Portis from "@portis/web3";
 import { IExec } from "iexec";
-import base64 from 'base-64';
+import base64 from "base-64";
 
 const networkOutput = document.getElementById("network");
 const addressOutput = document.getElementById("address");
@@ -81,9 +81,7 @@ const refreshUser = iexec => async () => {
   addressOutput.innerText = userAddress;
   rlcWalletOutput.innerHTML = rlcWalletText;
   nativeWalletOutput.innerHTML = nativeWalletText;
-  accountOutput.innerText = `${account.stake} nRLC (+ ${
-    account.locked
-  } nRLC locked)`;
+  accountOutput.innerText = `${account.stake} nRLC (+ ${account.locked} nRLC locked)`;
 };
 
 const deposit = iexec => async () => {
@@ -191,7 +189,6 @@ const buyComputation = iexec => async () => {
   }
 };
 
-
 const showTask = iexec => async () => {
   try {
     resultsShowTaskButton.disabled = true;
@@ -209,7 +206,7 @@ const showTask = iexec => async () => {
   }
 };
 
-const deploy = iexec => async (taskId) => {
+const deploy = iexec => async taskId => {
   try {
     if (taskId) {
       resultsDownloadInput1.value = taskId;
@@ -218,10 +215,18 @@ const deploy = iexec => async (taskId) => {
     resultsDownloadButton.disabled = true;
     resultsDownloadError.innerText = "";
 
-    console.log(resultsDownloadInput1.value, resultsDownloadInput2.value, resultsDownloadInput3.value)
+    console.log(
+      resultsDownloadInput1.value,
+      resultsDownloadInput2.value,
+      resultsDownloadInput3.value
+    );
 
-    if (!resultsDownloadInput1.value || !resultsDownloadInput2.value || !resultsDownloadInput3.value) {
-      throw new Error('Please provide task, username and password');
+    if (
+      !resultsDownloadInput1.value ||
+      !resultsDownloadInput2.value ||
+      !resultsDownloadInput3.value
+    ) {
+      throw new Error("Please provide task, username and password");
     }
 
     const taskid = resultsDownloadInput1.value;
@@ -245,31 +250,36 @@ const deploy = iexec => async (taskId) => {
     const ipfsCid = text.slice(6, -2);
     console.log(ipfsCid);
 
-
     let headers = new Headers();
-    headers.append('Authorization', 'Basic ' + base64.encode(resultsDownloadInput2.value + ":" + resultsDownloadInput3.value));
+    headers.append(
+      "Authorization",
+      "Basic " +
+        base64.encode(
+          resultsDownloadInput2.value + ":" + resultsDownloadInput3.value
+        )
+    );
 
     const response = await fetch("https://runfission.com/dns/" + ipfsCid, {
-      method: 'PUT',
+      method: "PUT",
       headers
-    })
+    });
 
     if (!response.ok) {
-      throw new Error('There was an error with FISSION. Wrong credentials?');
+      throw new Error("There was an error with FISSION. Wrong credentials?");
     }
 
     const url = await response.text();
 
     console.log(url);
 
-    resultsDownloadError.innerText = "Deployed at https://" + url + "! It will be available any minute 🎉"
+    resultsDownloadError.innerText =
+      "Deployed at https://" + url + "! It will be available any minute 🎉";
   } catch (error) {
     resultsDownloadError.innerText = error;
   } finally {
     resultsDownloadButton.disabled = false;
   }
 };
-
 
 const showPreviousDeals = iexec => async () => {
   try {
@@ -279,31 +289,59 @@ const showPreviousDeals = iexec => async () => {
     const userAddress = await iexec.wallet.getAddress();
     const deals = await iexec.deal.fetchRequesterDeals(userAddress);
 
-    Array.from(deals.deals).forEach(async function(deal) {
-      const task = await iexec.deal.computeTaskId(deal.dealid, 0);
-      const taskDetails = await iexec.task.show(task);
+    console.log(deals);
 
-      const button = document.createElement('button');
-      button.innerText = 'Deploy';
-      button.addEventListener('click', function() {
-        deploy(iexec)(task);
+    previousDealsOutput.innerHTML = deals.count + " build(s)<br />";
+
+    Array.from(deals.deals)
+      .sort((a, b) => (a.startTime < b.startTime ? 1 : -1))
+      .forEach(async function(deal) {
+        try {
+          const task = await iexec.deal.computeTaskId(deal.dealid, 0);
+          const taskDetails = await iexec.task.show(task);
+
+          const button = document.createElement("button");
+          button.innerText = "Deploy";
+          button.addEventListener("click", function() {
+            deploy(iexec)(task);
+          });
+
+          const container = document.createElement("div");
+          container.innerHTML = `
+        ID: ${task}<br />
+        Start: ${new Date(deal.startTime * 1000)}
+        Status: ${taskDetails.statusName}<br />
+        `;
+
+          if (taskDetails.statusName === "COMPLETED") {
+            container.appendChild(button);
+          }
+
+          container.style = `border-color: ${
+            taskDetails.statusName === "ACTIVE"
+              ? "blue"
+              : taskDetails.statusName === "COMPLETED"
+              ? "green"
+              : taskDetails.statusName === "REVEALING"
+              ? "blue"
+              : "red"
+          };`;
+          container.className = "container build";
+
+          previousDealsOutput.appendChild(container);
+        } catch (e) {
+          const container = document.createElement("div");
+          container.innerHTML = `
+        ID: …<br />
+        Status: WAITING<br />
+        `;
+
+          container.style = `border-color: yellow;`;
+          container.className = "container build";
+
+          previousDealsOutput.appendChild(container);
+        }
       });
-
-      const container = document.createElement('div');
-      container.innerHTML = `
-      ID: ${task}<br />
-      Status: ${taskDetails.statusName}<br />
-      `;
-
-      if (taskDetails.statusName === 'COMPLETED') {
-        container.appendChild(button);
-      }
-
-      container.style = `border-color: ${taskDetails.statusName === 'ACTIVE' ? 'blue' : taskDetails.statusName === 'COMPLETED' ? 'green' : 'red'};`;
-      container.className = "container build";
-
-      previousDealsOutput.appendChild(container);
-    });
 
     //previousDealsOutput.innerText = JSON.stringify(deals, null, 2);
   } catch (error) {
