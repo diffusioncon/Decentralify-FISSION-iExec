@@ -248,10 +248,20 @@ const deploy = iexec => async taskId => {
     const JSZip = require("jszip");
     const zip = new JSZip();
     const data = await zip.loadAsync(rawData);
-    const text = await data.file("iexec_out/ipfs-cid.txt").async("string");
+    const zipFile = data.file("iexec_out/ipfs-cid.txt");
+    if (!zipFile) {
+      throw new Error('Oops looks like the IPFS upload failed…');
+    }
+    const text = await zipFile.async("string");
 
     const ipfsCid = text.slice(6, -2);
     console.log(ipfsCid);
+
+    if (!ipfsCid) {
+      throw new Error('Oops looks like the IPFS upload failed…');
+    }
+
+    resultsDownloadError.innerText = "Your IPFS CID is " + ipfsCid + "\n";
 
     let headers = new Headers();
     headers.append(
@@ -275,8 +285,8 @@ const deploy = iexec => async taskId => {
 
     console.log(url);
 
-    resultsDownloadError.innerText =
-      "Deployed at https://" + url + "! It will be available any minute 🎉";
+    resultsDownloadError.innerText +=
+      " Deployed at https://" + url + "! It will be available any minute 🎉";
   } catch (error) {
     resultsDownloadError.innerText = error;
   } finally {
