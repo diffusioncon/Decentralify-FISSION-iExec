@@ -1,195 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <title>iExec</title>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-
-    <title>decentralify</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <div id="app">
-      <h2>Network</h2>
-      <div class="container">
-        <span id="network">Not connected</span>
-      </div>
-      <hr />
-      <h2>Wallet</h2>
-      <div class="container">
-        <label for="address">Address: </label><span id="address" />
-      </div>
-      <div class="container">
-        <label for="rlc-wallet">RLC wallet: </label><span id="rlc-wallet" />
-      </div>
-      <div class="container">
-        <label for="native-wallet">Native wallet: </label
-        ><span id="native-wallet" />
-      </div>
-      <hr />
-      <h2>Account</h2>
-    </div>
-    <div class="container">
-      <label for="account">User account: </label><span id="account" />
-    </div>
-    <div class="container">
+    <div class="content">
       <div>
-        <label for="account-deposit-input">Amount</label>
-        <input
-          id="account-deposit-input"
-          type="number"
-          value="100"
-          min="1"
-          placeholder="nRLC to deposit"
-        />
-        <button id="account-deposit-button" disabled>DEPOSIT</button>
+          <div id="app">
+              <h2>Network</h2>
+              <div class="container">
+                <span id="network">Not connected</span>
+              </div>
+              <hr />
+              <h2>Wallet</h2>
+              <div class="container">
+                <label for="address">Address: </label><span id="address" />
+              </div>
+              <div class="container">
+                <label for="rlc-wallet">RLC wallet: </label><span id="rlc-wallet" />
+              </div>
+              <div class="container">
+                <label for="native-wallet">Native wallet: </label
+                ><span id="native-wallet" />
+              </div>
+              <hr />
+              <h2>Account</h2>
+            </div>
+            <div class="container">
+              <label for="account">User account: </label><span id="account" />
+            </div>
+            <div class="container">
+              <div>
+                <label for="account-deposit-input">Amount</label>
+                <input
+                  id="account-deposit-input"
+                  type="number"
+                  value="100"
+                  min="1"
+                  placeholder="nRLC to deposit"
+                />
+                <button id="account-deposit-button" disabled>DEPOSIT</button>
+              </div>
+              <label id="account-deposit-error" class="error"></label>
+            </div>
+            <div class="container">
+              <div>
+                <label for="account-withdraw-input">Amount</label>
+                <input
+                  id="account-withdraw-input"
+                  type="number"
+                  value="100"
+                  min="1"
+                  placeholder="nRLC to withdraw"
+                />
+                <button id="account-withdraw-button" disabled>WITHDRAW</button>
+              </div>
+              <label id="account-withdraw-error" class="error"></label>
+            </div>
+            <hr />
+            <h2>Decentralify App</h2>
+            <div class="container">
+              <div>
+                <label for="apps-address-input">App address</label>
+                <input
+                  id="apps-address-input"
+                  type="text"
+                  value="0xeB540332314Cb7EF49A06Ae35746bdFbd322b106"
+                  placeholder="App address"
+                />
+                <button id="apps-show-button" disabled>SHOW APP</button>
+              </div>
+              <label id="apps-show-error" class="error"></label>
+              <div class="scrollable" id="apps-details-output"></div>
+            </div>
+            <hr />
+            <h2>Build Your Web App</h2>
+            <div class="container">
+              <div>
+                <div>
+                  <label for="buy-appaddress-input">App address</label>
+                  <input
+                    id="buy-appaddress-input"
+                    type="text"
+                    value="0xeB540332314Cb7EF49A06Ae35746bdFbd322b106"
+                    placeholder="App address"
+                  />
+                </div>
+                <div style="display: none;">
+                  <label for="buy-category-input">Category</label>
+                  <input
+                    id="buy-category-input"
+                    type="hidden"
+                    value="1"
+                    min="0"
+                    placeholder="Category"
+                  />
+                </div>
+                <div>
+                  <label for="buy-params-input-1">GitHub repo</label>
+                  <input
+                    id="buy-params-input-1"
+                    type="text"
+                    value="https://github.com/maggo/mar.co.de.git"
+                    placeholder="GitHub repo"
+                  />
+                </div>
+                <div>
+                  <label for="buy-params-input-2">Build output directory</label>
+                  <input
+                    id="buy-params-input-2"
+                    type="text"
+                    value="dist"
+                    placeholder="Build output directory"
+                  />
+                </div>
+                <div>
+                  <label for="buy-params-input-3">Build parameters</label>
+                  <input
+                    id="buy-params-input-3"
+                    type="text"
+                    value="yarn run build"
+                    placeholder="Build parameters"
+                  />
+                </div>
+                <button style="padding: .5rem; background-color: lightgreen; font-weight: bold" id="buy-buy-button" disabled>BUILD YOUR WEB APP!</button>
+              </div>
+              <label id="buy-buy-error" class="error"></label>
+              <div class="scrollable" id="buy-dealid-output"></div>
+            </div>
+            <div style="display: none;" class="container">
+              <div>
+                <label for="results-taskid-input">Build Status</label>
+                <input
+                  id="results-taskid-input"
+                  type="text"
+                  value=""
+                  placeholder="taskid"
+                />
+                <button id="results-showtask-button" disabled>GET STATUS</button>
+              </div>
+              <label id="results-showtask-error" class="error"></label>
+              <div class="scrollable" id="results-taskdetails-output"></div>
+            </div>
+            <hr />
+            <h2>Publish Your Web App</h2>
+            <div class="container">
+              <div>
+                <div>
+                  <label for="results-download-input-1">Build ID</label>
+                  <input
+                    id="results-download-input-1"
+                    type="text"
+                    value=""
+                    placeholder="taskid"
+                  />
+                </div>
+                <div>
+                  <label for="results-download-input-2">FISSION username</label>
+                  <input
+                    id="results-download-input-2"
+                    type="text"
+                    placeholder="FISSION username"
+                  />
+                </div>
+                <div>
+                  <label for="results-download-input-3">FISSION password</label>
+                  <input
+                    id="results-download-input-3"
+                    type="password"
+                    placeholder="FISSION password"
+                  />
+                </div>
+                <button id="results-download-button" disabled>
+                  PUBLISH
+                </button>
+              </div>
+            </div>
+            <label id="results-download-error" class="error"></label>
+            <hr />
       </div>
-      <label id="account-deposit-error" class="error"></label>
+    
+    <div>
+        <h2>Your Builds</h2>
+          <div>
+            <button id="previous-deals-button" disabled>Update Builds</button>
+          </div>
+          <label id="previous-deals-error" class="error"></label>
+          <div id="previous-deals-output"></div>
     </div>
-    <div class="container">
-      <div>
-        <label for="account-withdraw-input">Amount</label>
-        <input
-          id="account-withdraw-input"
-          type="number"
-          value="100"
-          min="1"
-          placeholder="nRLC to withdraw"
-        />
-        <button id="account-withdraw-button" disabled>WITHDRAW</button>
-      </div>
-      <label id="account-withdraw-error" class="error"></label>
-    </div>
-    <hr />
-    <h2>Decentralify App</h2>
-    <div class="container">
-      <div>
-        <label for="apps-address-input">App address</label>
-        <input
-          id="apps-address-input"
-          type="text"
-          value="0x39e1edD5Ba0229B93CF11D05786dfA31857f7a10"
-          placeholder="App address"
-        />
-        <button id="apps-show-button" disabled>SHOW APP</button>
-      </div>
-      <label id="apps-show-error" class="error"></label>
-      <div class="scrollable" id="apps-details-output"></div>
-    </div>
-    <hr />
-    <h2>Build & Deploy Your Web App</h2>
-    <div class="container">
-      <div>
-        <div>
-          <label for="buy-appaddress-input">App address</label>
-          <input
-            id="buy-appaddress-input"
-            type="text"
-            value="0x39e1edD5Ba0229B93CF11D05786dfA31857f7a10"
-            placeholder="App address"
-          />
-        </div>
-        <div>
-          <label for="buy-category-input">Category</label>
-          <input
-            id="buy-category-input"
-            type="number"
-            value="1"
-            min="0"
-            placeholder="Category"
-          />
-        </div>
-        <div>
-          <label for="buy-params-input-1">GitHub repo</label>
-          <input
-            id="buy-params-input-1"
-            type="text"
-            value="https://github.com/maggo/mar.co.de.git"
-            placeholder="GitHub repo"
-          />
-        </div>
-        <div>
-          <label for="buy-params-input-2">Build output directory</label>
-          <input
-            id="buy-params-input-2"
-            type="text"
-            value="dist"
-            placeholder="Build output directory"
-          />
-        </div>
-        <div>
-          <label for="buy-params-input-3">Build parameters</label>
-          <input
-            id="buy-params-input-2"
-            type="text"
-            value="yarn run build"
-            placeholder="Build parameters"
-          />
-        </div>
-        <button id="buy-buy-button" disabled>BUILD & DEPLOY</button>
-      </div>
-      <label id="buy-buy-error" class="error"></label>
-      <div class="scrollable" id="buy-dealid-output"></div>
-    </div>
-    <hr />
-    <h2>Previous deals</h2>
-    <div class="container">
-      <div>
-        <button id="previous-deals-button" disabled>SHOW PREVIOUS DEALS</button>
-      </div>
-      <label id="previous-deals-error" class="error"></label>
-      <div class="scrollable" id="previous-deals-output"></div>
-    </div>
-    <hr />
-    <h2>Find results</h2>
-    <div class="container">
-      <div>
-        <label for="results-dealid-input">Dealid</label>
-        <input
-          id="results-dealid-input"
-          type="text"
-          value="0x1497480f3b2fa82e4026fcecc8fd0cd08791226aa5b97453e5cf6982bc4411d5"
-          placeholder="dealid"
-        />
-        <button id="results-showdeal-button" disabled>SHOW DEAL</button>
-      </div>
-      <label id="results-showdeal-error" class="error"></label>
-      <div class="scrollable" id="results-dealdetails-output"></div>
-    </div>
-    <div class="container">
-      <div>
-        <label for="results-taskid-input">Taskid</label>
-        <input
-          id="results-taskid-input"
-          type="text"
-          value="0x194488f76903579d3a3acd89cb75420d52e31e03ab194a74b95247339cf2180f"
-          placeholder="taskid"
-        />
-        <button id="results-showtask-button" disabled>SHOW TASK</button>
-      </div>
-      <label id="results-showtask-error" class="error"></label>
-      <div class="scrollable" id="results-taskdetails-output"></div>
-    </div>
-    <div class="container">
-      <div>
-        <label for="results-download-input">Taskid</label>
-        <input
-          id="results-download-input"
-          type="text"
-          value="0x194488f76903579d3a3acd89cb75420d52e31e03ab194a74b95247339cf2180f"
-          placeholder="taskid to download"
-        />
-        <button id="results-download-button" disabled>
-          DOWNLOAD TASK RESULT
-        </button>
-      </div>
-    </div>
-    <label id="results-download-error" class="error"></label>
+  </div>
+    <script src="src/index.js"></script>
   </body>
 </html>

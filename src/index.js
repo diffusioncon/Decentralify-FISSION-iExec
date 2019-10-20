@@ -1,6 +1,7 @@
 import "./styles.css";
 import Portis from "@portis/web3";
 import { IExec } from "iexec";
+import base64 from 'base-64';
 
 const networkOutput = document.getElementById("network");
 const addressOutput = document.getElementById("address");
@@ -27,13 +28,12 @@ const buyCategoryInput = document.getElementById("buy-category-input");
 const buyParamsInput1 = document.getElementById("buy-params-input-1");
 const buyParamsInput2 = document.getElementById("buy-params-input-2");
 const buyParamsInput3 = document.getElementById("buy-params-input-3");
-const buyParamsInput =
-  buyParamsInput1 + " " + buyParamsInput2 + " " + buyParamsInput3;
 
 const previousDealsButton = document.getElementById("previous-deals-button");
 const previousDealsError = document.getElementById("previous-deals-error");
 const previousDealsOutput = document.getElementById("previous-deals-output");
-const resultsDealidInput = document.getElementById("results-dealid-input");
+/*const resultsDealidInput = document.getElementById("results-dealid-input");
+
 const resultsShowDealButton = document.getElementById(
   "results-showdeal-button"
 );
@@ -41,6 +41,7 @@ const resultsShowDealError = document.getElementById("results-showdeal-error");
 const resultsShowDealOutput = document.getElementById(
   "results-dealdetails-output"
 );
+*/
 const resultsTaskidInput = document.getElementById("results-taskid-input");
 const resultsShowTaskButton = document.getElementById(
   "results-showtask-button"
@@ -49,7 +50,17 @@ const resultsShowTaskError = document.getElementById("results-showtask-error");
 const resultsShowTaskOutput = document.getElementById(
   "results-taskdetails-output"
 );
-const resultsDownloadInput = document.getElementById("results-download-input");
+
+const resultsDownloadInput1 = document.getElementById(
+  "results-download-input-1"
+);
+const resultsDownloadInput2 = document.getElementById(
+  "results-download-input-2"
+);
+const resultsDownloadInput3 = document.getElementById(
+  "results-download-input-3"
+);
+
 const resultsDownloadButton = document.getElementById(
   "results-download-button"
 );
@@ -70,7 +81,9 @@ const refreshUser = iexec => async () => {
   addressOutput.innerText = userAddress;
   rlcWalletOutput.innerHTML = rlcWalletText;
   nativeWalletOutput.innerHTML = nativeWalletText;
-  accountOutput.innerText = `${account.stake} nRLC (+ ${account.locked} nRLC locked)`;
+  accountOutput.innerText = `${account.stake} nRLC (+ ${
+    account.locked
+  } nRLC locked)`;
 };
 
 const deposit = iexec => async () => {
@@ -123,7 +136,14 @@ const buyComputation = iexec => async () => {
     buyBuyOutput.innerText = "";
     const appAddress = buyAppAddressInput.value;
     const category = buyCategoryInput.value;
-    const params = buyParamsInput.value;
+    const buyParamsInput =
+      buyParamsInput1.value +
+      " " +
+      buyParamsInput2.value +
+      " " +
+      buyParamsInput3.value;
+    const params = buyParamsInput;
+    console.log(params);
     const { appOrders } = await iexec.orderbook.fetchAppOrderbook(appAddress);
     const appOrder = appOrders && appOrders[0] && appOrders[0].order;
     if (!appOrder) throw Error(`no apporder found for app ${appAddress}`);
@@ -155,7 +175,14 @@ const buyComputation = iexec => async () => {
       workerpoolorder: workerpoolOrder
     });
     buyBuyOutput.innerText = JSON.stringify(res, null, 2);
-    resultsDealidInput.value = res.dealid;
+    console.log(res);
+    //resultsDealidInput.value = res.dealid;
+
+    const task = await iexec.deal.computeTaskId(res.dealid, 0);
+    console.log(task);
+
+    resultsTaskidInput.value = task;
+    resultsDownloadInput1.value = task;
     refreshUser(iexec)();
   } catch (error) {
     buyBuyError.innerText = error;
@@ -164,37 +191,6 @@ const buyComputation = iexec => async () => {
   }
 };
 
-const showPreviousDeals = iexec => async () => {
-  try {
-    previousDealsButton.disabled = true;
-    previousDealsError.innerText = "";
-    previousDealsOutput.innerText = "";
-    const userAddress = await iexec.wallet.getAddress();
-    const deals = await iexec.deal.fetchRequesterDeals(userAddress);
-    previousDealsOutput.innerText = JSON.stringify(deals, null, 2);
-  } catch (error) {
-    previousDealsError.innerText = error;
-  } finally {
-    previousDealsButton.disabled = false;
-  }
-};
-
-const showDeal = iexec => async () => {
-  try {
-    resultsShowDealButton.disabled = true;
-    resultsShowDealError.innerText = "";
-    resultsShowDealOutput.innerText = "";
-    const dealid = resultsDealidInput.value;
-    const deal = await iexec.deal.show(dealid);
-    resultsShowDealOutput.innerText = JSON.stringify(deal, null, 2);
-    resultsTaskidInput.value = deal.tasks["0"];
-    resultsDownloadInput.value = deal.tasks["0"];
-  } catch (error) {
-    resultsShowDealError.innerText = error;
-  } finally {
-    resultsShowDealButton.disabled = false;
-  }
-};
 
 const showTask = iexec => async () => {
   try {
@@ -203,7 +199,9 @@ const showTask = iexec => async () => {
     resultsShowTaskOutput.innerText = "";
     const taskid = resultsTaskidInput.value;
     const res = await iexec.task.show(taskid);
-    resultsShowTaskOutput.innerText = JSON.stringify(res, null, 2);
+    const status = res.statusName;
+    //resultsShowTaskOutput.innerText = JSON.stringify(res, null, 2);
+    resultsShowTaskOutput.innerText = status;
   } catch (error) {
     resultsShowTaskError.innerText = error;
   } finally {
@@ -211,57 +209,107 @@ const showTask = iexec => async () => {
   }
 };
 
-const dowloadResults = iexec => async () => {
+const deploy = iexec => async (taskId) => {
   try {
+    if (taskId) {
+      resultsDownloadInput1.value = taskId;
+    }
+
     resultsDownloadButton.disabled = true;
     resultsDownloadError.innerText = "";
-    const taskid = resultsDownloadInput.value;
+
+    console.log(resultsDownloadInput1.value, resultsDownloadInput2.value, resultsDownloadInput3.value)
+
+    if (!resultsDownloadInput1.value || !resultsDownloadInput2.value || !resultsDownloadInput3.value) {
+      throw new Error('Please provide task, username and password');
+    }
+
+    const taskid = resultsDownloadInput1.value;
     const res = await iexec.task.fetchResults(taskid, {
       ipfsGatewayURL: "https://ipfs.iex.ec"
     });
     const file = await res.blob();
-
-    /*
-    const fileName = `${taskid}.zip`;
-    if (window.navigator.msSaveOrOpenBlob)
-      window.navigator.msSaveOrOpenBlob(file, fileName);
-    else {
-      const a = document.createElement("a");
-      const url = URL.createObjectURL(file);
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 0);
-    }
-    */
 
     function blob2data(blob) {
       const fd = new FormData();
       fd.set("a", blob);
       return fd.get("a");
     }
-    var data = blob2data(file);
+    const rawData = blob2data(file);
 
-    var JSZip = require("jszip");
-    var zip = new JSZip();
+    const JSZip = require("jszip");
+    const zip = new JSZip();
+    const data = await zip.loadAsync(rawData);
+    const text = await data.file("iexec_out/ipfs-cid.txt").async("string");
 
-    zip
-      .loadAsync(data)
-      .then(function(zip) {
-        return zip.file("stdout.txt").async("string");
-        // zip.file("hello.txt").async("string"); // a promise of "Hello World\n"
-      })
-      .then(function(text) {
-        console.log(text);
-      });
+    const ipfsCid = text.slice(6, -2);
+    console.log(ipfsCid);
+
+
+    let headers = new Headers();
+    headers.append('Authorization', 'Basic ' + base64.encode(resultsDownloadInput2.value + ":" + resultsDownloadInput3.value));
+
+    const response = await fetch("https://runfission.com/dns/" + ipfsCid, {
+      method: 'PUT',
+      headers
+    })
+
+    if (!response.ok) {
+      throw new Error('There was an error with FISSION. Wrong credentials?');
+    }
+
+    const url = await response.text();
+
+    console.log(url);
+
+    resultsDownloadError.innerText = "Deployed at https://" + url + "! It will be available any minute 🎉"
   } catch (error) {
     resultsDownloadError.innerText = error;
   } finally {
     resultsDownloadButton.disabled = false;
+  }
+};
+
+
+const showPreviousDeals = iexec => async () => {
+  try {
+    previousDealsButton.disabled = true;
+    previousDealsError.innerText = "";
+    previousDealsOutput.innerText = "";
+    const userAddress = await iexec.wallet.getAddress();
+    const deals = await iexec.deal.fetchRequesterDeals(userAddress);
+
+    Array.from(deals.deals).forEach(async function(deal) {
+      const task = await iexec.deal.computeTaskId(deal.dealid, 0);
+      const taskDetails = await iexec.task.show(task);
+
+      const button = document.createElement('button');
+      button.innerText = 'Deploy';
+      button.addEventListener('click', function() {
+        deploy(iexec)(task);
+      });
+
+      const container = document.createElement('div');
+      container.innerHTML = `
+      ID: ${task}<br />
+      Status: ${taskDetails.statusName}<br />
+      `;
+
+      if (taskDetails.statusName === 'COMPLETED') {
+        container.appendChild(button);
+      }
+
+      container.style = `border-color: ${taskDetails.statusName === 'ACTIVE' ? 'blue' : taskDetails.statusName === 'COMPLETED' ? 'green' : 'red'};`;
+      container.className = "container build";
+
+      previousDealsOutput.appendChild(container);
+    });
+
+    //previousDealsOutput.innerText = JSON.stringify(deals, null, 2);
+  } catch (error) {
+    previousDealsError.innerText = error;
+  } finally {
+    previousDealsButton.disabled = false;
   }
 };
 
@@ -316,18 +364,24 @@ const init = async () => {
     appsShowButton.addEventListener("click", showApp(iexec));
     buyBuyButton.addEventListener("click", buyComputation(iexec));
     previousDealsButton.addEventListener("click", showPreviousDeals(iexec));
+    /*
     resultsShowDealButton.addEventListener("click", showDeal(iexec));
+    */
     resultsShowTaskButton.addEventListener("click", showTask(iexec));
-    resultsDownloadButton.addEventListener("click", dowloadResults(iexec));
+    resultsDownloadButton.addEventListener("click", () => deploy(iexec)());
     accountDepositButton.disabled = false;
     accountWithdrawButton.disabled = false;
     appsShowButton.disabled = false;
     buyBuyButton.disabled = false;
     previousDealsButton.disabled = false;
+    /*
     resultsShowDealButton.disabled = false;
+    */
     resultsShowTaskButton.disabled = false;
     resultsDownloadButton.disabled = false;
     console.log("initialized");
+
+    await showPreviousDeals(iexec)();
   } catch (e) {
     console.error(e.message);
   }

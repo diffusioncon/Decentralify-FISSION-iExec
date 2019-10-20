@@ -28,3 +28,31 @@ button {
   padding-left: 10px;
   border-left: 3px solid #fae900;
 }
+
+.title {
+  font-size: 3rem;
+}
+
+.content {
+  width: 90%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2rem;
+}
+
+.badge {
+  position: fixed;
+  top: 0;
+  right: 0;
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-bottom-left-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  grid-gap: 1rem;
+}

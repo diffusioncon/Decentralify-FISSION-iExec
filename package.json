@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@portis/web3": "^2.0.0-beta.43",
+    "base-64": "^0.1.0",
+    "iexec": "3.1.1",
+    "jszip": "3.2.2",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
-    "react-scripts": "3.2.0",
-    "@portis/web3": "^2.0.0-beta.43",
-    "iexec": "3.1.1",
-    "jszip": "3.2.2"
+    "react-scripts": "3.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
