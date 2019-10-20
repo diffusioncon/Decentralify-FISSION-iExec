@@ -248,6 +248,12 @@ const deploy = iexec => async taskId => {
     const JSZip = require("jszip");
     const zip = new JSZip();
     const data = await zip.loadAsync(rawData);
+
+    const stdFile = data.file("stdout.txt");
+    const stdText = await stdFile.async("string");
+
+    document.getElementById('build-output').innerText = stdText;
+    
     const zipFile = data.file("iexec_out/ipfs-cid.txt");
     if (!zipFile) {
       throw new Error('Oops looks like the IPFS upload failed…');
